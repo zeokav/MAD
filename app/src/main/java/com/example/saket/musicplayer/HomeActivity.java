@@ -47,9 +47,9 @@ class Song {
     private String title,artist;
 
     public Song(long songID,String songTitle, String songArtist) {
-        id=songID;
-        artist=songArtist;
-        title=songTitle;
+        id = songID;
+        artist = songArtist;
+        title = songTitle;
     }
 
 
