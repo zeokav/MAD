@@ -11,15 +11,19 @@ import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 public class SongActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private MusicService mService;
+    ArrayList<Song> songList;
     private boolean musicBound = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.song_playing);
+        songList = getIntent().getParcelableExtra("song_list");
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
