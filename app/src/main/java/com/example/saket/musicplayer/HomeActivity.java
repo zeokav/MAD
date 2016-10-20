@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.StringDef;
 import android.support.v4.app.ActivityCompat;
@@ -37,11 +39,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-class Song {
+class Song implements Parcelable{
 
     /*
         Class for a specific song, hold information about the song.
      */
+
+    private Song(Parcel in) {
+        title = in.readString();
+        artist = in.readString();
+        id = in.readLong();
+    }
 
     private long id;
     private String title,artist;
@@ -63,6 +71,30 @@ class Song {
     public String getSongTitle() {
         return title;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(title);
+        parcel.writeString(artist);
+        parcel.writeLong(id);
+    }
+
+    public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
+        @Override
+        public Song createFromParcel(Parcel parcel) {
+            return new Song(parcel);
+        }
+
+        @Override
+        public Song[] newArray(int i) {
+            return new Song[i];
+        }
+    };
 }
 
 
@@ -165,6 +197,7 @@ public class HomeActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Toast.makeText(getApplicationContext(), "Selected: " + i, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), SongActivity.class);
+                intent.putExtra("song_list", songList);
                 startActivity(intent);
             }
         });
