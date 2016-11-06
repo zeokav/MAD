@@ -9,6 +9,8 @@ import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
 
+import com.example.saket.musicplayer.utils.Song;
+
 import java.util.ArrayList;
 
 /**
