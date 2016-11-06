@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.annotation.StringDef;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,10 +26,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,49 +36,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+/**
+ * Class that stores data about a song.
+ */
+
 class Song implements Parcelable{
-
-    /*
-        Class for a specific song, hold information about the song.
-     */
-
-    private Song(Parcel in) {
-        title = in.readString();
-        artist = in.readString();
-        id = in.readLong();
-    }
-
     private long id;
     private String title,artist;
 
-    public Song(long songID,String songTitle, String songArtist) {
-        id = songID;
-        artist = songArtist;
-        title = songTitle;
-    }
 
-
-    // Getters
-    public long getSongId() {
-        return id;
-    }
-    public String getSongArtist() {
-        return artist;
-    }
-    public String getSongTitle() {
-        return title;
-    }
-
+    // Parcelable for transferring song information through intent object.
     @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(title);
-        parcel.writeString(artist);
-        parcel.writeLong(id);
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeLong(id);
+        out.writeString(title);
+        out.writeString(artist);
     }
 
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
@@ -95,6 +69,43 @@ class Song implements Parcelable{
             return new Song[i];
         }
     };
+
+    private Song(Parcel parcel) {
+        id = parcel.readLong();
+        title = parcel.readString();
+        artist = parcel.readString();
+    }
+
+    public Song(long songID,String songTitle, String songArtist) {
+        id = songID;
+        artist = songArtist;
+        title = songTitle;
+    }
+
+    /**
+     * Returns ID of the song.
+     * @return id
+     */
+    public long getSongId() {
+        return id;
+    }
+
+    /**
+     * Returns artist of the song
+     * @return artist name
+     */
+    public String getSongArtist() {
+        return artist;
+    }
+
+    /**
+     * Returns name of song
+     * @return Song name
+     */
+    public String getSongTitle() {
+        return title;
+    }
+
 }
 
 
@@ -152,13 +163,13 @@ public class HomeActivity extends AppCompatActivity
 
     private ArrayList<Song> songList;
     private ListView songView;
-
+    String TAG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        TAG = "Permissions";
 
         // If permissions are denied, show toast and exit out of the activity.
         if(!isStoragePermissionGranted()) {
@@ -192,16 +203,16 @@ public class HomeActivity extends AppCompatActivity
         });
         SongAdapter songAdapter = new SongAdapter(this,songList);
         songView.setAdapter(songAdapter);
+
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Toast.makeText(getApplicationContext(), "Selected: " + i, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), SongActivity.class);
-                intent.putExtra("song_list", songList);
+                intent.putExtra("song_info", songList.get(i));
                 startActivity(intent);
             }
         });
-
     }
 
 
@@ -276,7 +287,7 @@ public class HomeActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
-            //Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
+            Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
             //resume tasks needing this permission
         }
     }
@@ -285,17 +296,16 @@ public class HomeActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT > 22) {
             if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
-                //Log.v(TAG,"Permission is granted");
+                Log.v(TAG,"Permission is granted");
                 return true;
             } else {
-
-                //Log.v(TAG,"Permission is revoked");
+                Log.v(TAG,"Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                 return false;
             }
         }
         else { //permission is automatically granted on sdk<23 upon installation
-            //Log.v(TAG, "Permission is granted");
+            Log.v(TAG, "Permission is granted");
             return true;
         }
     }
