@@ -9,8 +9,7 @@ import android.os.Parcelable;
 
 public class Song implements Parcelable {
     private long id;
-    private String title,artist;
-
+    private String title, artist, path;
 
     // Parcelable for transferring song information through intent object.
     @Override
@@ -23,6 +22,7 @@ public class Song implements Parcelable {
         out.writeLong(id);
         out.writeString(title);
         out.writeString(artist);
+        out.writeString(path);
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
@@ -41,12 +41,14 @@ public class Song implements Parcelable {
         id = parcel.readLong();
         title = parcel.readString();
         artist = parcel.readString();
+        path = parcel.readString();
     }
 
-    public Song(long songID,String songTitle, String songArtist) {
+    public Song(long songID,String songTitle, String songArtist, String songPath) {
         id = songID;
         artist = songArtist;
         title = songTitle;
+        path = songPath;
     }
 
     /**
@@ -71,6 +73,14 @@ public class Song implements Parcelable {
      */
     public String getSongTitle() {
         return title;
+    }
+
+    /**
+     * Returns path of song
+     * @return Song path
+     */
+    public String getSongPath() {
+        return path;
     }
 
 }

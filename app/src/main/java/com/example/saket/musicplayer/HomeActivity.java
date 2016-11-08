@@ -23,10 +23,8 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.example.saket.musicplayer.utils.Song;
 import com.example.saket.musicplayer.utils.SongAdapter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -129,12 +127,14 @@ public class HomeActivity extends AppCompatActivity
         int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
         int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
         int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+        int path = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
         if(musicCursor !=null && musicCursor.moveToFirst()) {
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
-                songList.add(new Song(thisId, thisTitle, thisArtist));
+                String thisPath = musicCursor.getString(path);
+                songList.add(new Song(thisId, thisTitle, thisArtist, thisPath));
             } while (musicCursor.moveToNext());
         }
     }
@@ -146,13 +146,13 @@ public class HomeActivity extends AppCompatActivity
                 return o1.getSongTitle().compareTo(o2.getSongTitle());
             }
         });
+
         SongAdapter songAdapter = new SongAdapter(this,songList);
         songView.setAdapter(songAdapter);
 
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getApplicationContext(), "Selected: " + i, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), SongActivity.class);
                 intent.putExtra("song_info", songList.get(i));
                 startActivity(intent);
