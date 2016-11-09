@@ -16,11 +16,8 @@ import com.example.saket.musicplayer.utils.Song;
 
 import java.util.ArrayList;
 
-public class SongActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class SongActivity extends AppCompatActivity {
 
-    private MusicService mService;
-    ArrayList<Song> songList;
-    private boolean musicBound = false;
     MediaPlayer mediaPlayer;
 
     @Override
@@ -49,24 +46,20 @@ public class SongActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(getApplicationContext(), "There was an error!", Toast.LENGTH_LONG).show();
         }
     }
+//
+//    private ServiceConnection mConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName componentName, IBinder service) {
+//            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+//            mService = binder.getService();
+////            mService.setList();
+//            musicBound = true;
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName componentName) {
+//            musicBound = false;
+//        }
+//    };
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-            mService = binder.getService();
-//            mService.setList();
-            musicBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            musicBound = false;
-        }
-    };
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return true;
-    }
 }
