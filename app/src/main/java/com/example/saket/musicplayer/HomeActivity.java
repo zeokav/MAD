@@ -1,13 +1,17 @@
 package com.example.saket.musicplayer;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -36,6 +40,9 @@ public class HomeActivity extends AppCompatActivity
     private ArrayList<Song> songList;
     private ListView songView;
     String TAG;
+    public MusicService mService;
+    private Intent mIntent;
+    private boolean isBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +75,24 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+    // Bind service when app starts.
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(mIntent == null) {
+            mIntent = new Intent(this, MusicService.class);
+            bindService(mIntent, mConnection, Context.BIND_AUTO_CREATE);
+            startService(mIntent);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(mConnection);
+        stopService(mIntent);
+        mService = null;
+        super.onDestroy();
+    }
 
     @Override
     public void onBackPressed() {
@@ -75,7 +100,7 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            moveTaskToBack(true);
         }
     }
 
@@ -96,6 +121,8 @@ public class HomeActivity extends AppCompatActivity
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
             startActivity(intent);
         } else if(id == R.id.exit_app) {
+            stopService(mIntent);
+            mService = null;
             finish();
         }
 
@@ -156,6 +183,7 @@ public class HomeActivity extends AppCompatActivity
                 Intent intent = new Intent(getApplicationContext(), SongActivity.class);
                 intent.putExtra("song_info", songList.get(i));
                 startActivity(intent);
+                mService.startAt(i);
             }
         });
     }
@@ -185,4 +213,19 @@ public class HomeActivity extends AppCompatActivity
             return true;
         }
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            MusicService.MusicBinder mBinder = (MusicService.MusicBinder)iBinder;
+            mService = mBinder.getService();
+            mService.setPlaylist(songList);
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            isBound = false;
+        }
+    };
 }
