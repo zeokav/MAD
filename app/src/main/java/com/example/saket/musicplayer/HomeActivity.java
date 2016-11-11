@@ -45,7 +45,6 @@ public class HomeActivity extends AppCompatActivity
     String TAG;
     public MusicService mService;
     private Intent mIntent;
-    private boolean isBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,9 +125,6 @@ public class HomeActivity extends AppCompatActivity
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
             startActivity(intent);
         } else if(id == R.id.exit_app) {
-            stopService(mIntent);
-            unbindService(mConnection);
-            mService = null;
             finish();
         }
 
@@ -227,12 +223,11 @@ public class HomeActivity extends AppCompatActivity
             MusicService.MusicBinder mBinder = (MusicService.MusicBinder)iBinder;
             mService = mBinder.getService();
             mService.setPlaylist(songList);
-            isBound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            isBound = false;
+
         }
     };
 }

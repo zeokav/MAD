@@ -25,12 +25,13 @@ import java.util.ArrayList;
  */
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
-    public static final int serviceTag = 1;
     public static final int notifierId = 1;
     private MediaPlayer mPlayer;
     private ArrayList<Song> playList;
     private int currPosn;
     private final IBinder mBind = new MusicBinder();
+    private boolean isPaused = false;
+    private boolean isSetup = false;
 
     public void onCreate() {
         super.onCreate();
@@ -65,6 +66,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void startAt(int position) {
         currPosn = position;
         startSong();
+        isSetup = true;
     }
 
     public void startSong() {
@@ -92,6 +94,44 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         notifier.setContentIntent(resultIntent);
         NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         mgr.notify(notifierId, notifier.build());
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    public void pauseSong() {
+        mPlayer.pause();
+        isPaused = true;
+    }
+
+    public void stopSong() {
+        mPlayer.stop();
+        isSetup = false;
+    }
+
+    public void nextSong() {
+        currPosn = (currPosn + 1)%playList.size();
+        startAt(currPosn);
+    }
+
+    public void prevSong() {
+        currPosn -= 1;
+        if(currPosn < 0) {
+            currPosn = playList.size() - 1;
+        }
+        startAt(currPosn);
+    }
+
+    public void resumeSong() {
+        if(isSetup) {
+            mPlayer.start();
+            isPaused = false;
+        }
+        else {
+            startAt(currPosn);
+        }
+
     }
 
     // Event handlers
