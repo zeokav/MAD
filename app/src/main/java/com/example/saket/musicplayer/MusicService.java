@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Binder;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.example.saket.musicplayer.utils.Song;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by saket on 10/20/2016.
@@ -32,6 +34,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private final IBinder mBind = new MusicBinder();
     private boolean isPaused = false;
     private boolean isSetup = false;
+    public static final String pref_tag = "PLAYERPREFS";
 
     public void onCreate() {
         super.onCreate();
@@ -111,7 +114,15 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void nextSong() {
-        currPosn = (currPosn + 1)%playList.size();
+        SharedPreferences pref = getSharedPreferences(pref_tag, 0);
+        boolean is_shuffle = pref.getBoolean("shuffle", false);
+        if(is_shuffle) {
+            Random r = new Random();
+            currPosn = r.nextInt(playList.size());
+        }
+        else {
+            currPosn = (currPosn + 1)%playList.size();
+        }
         startAt(currPosn);
     }
 

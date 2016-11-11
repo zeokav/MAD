@@ -24,10 +24,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Settings"
         android:id="@+id/textView"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:textStyle="italic"
         android:layout_alignParentEnd="false"
-        android:textIsSelectable="false" />
+        android:textIsSelectable="false"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>
