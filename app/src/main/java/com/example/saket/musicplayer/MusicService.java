@@ -1,5 +1,7 @@
 package com.example.saket.musicplayer;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.example.saket.musicplayer.utils.Song;
@@ -22,6 +25,7 @@ import java.util.ArrayList;
  */
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
+    public static final int notifierId = 1;
     private MediaPlayer mPlayer;
     private ArrayList<Song> playList;
     private int currPosn;
@@ -75,6 +79,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
 
         mPlayer.prepareAsync();
+        NotificationCompat.Builder notifier = new NotificationCompat.Builder(this);
+        notifier.setContentText(toPlay.getSongArtist());
+        notifier.setContentTitle(toPlay.getSongTitle());
+        notifier.setSmallIcon(R.drawable.notificon);
+
+        Intent onSelect = new Intent(this, SongActivity.class);
+        onSelect.putExtra("song_info", toPlay);
+
+        PendingIntent resultIntent = PendingIntent.getActivity(this, 0, onSelect, PendingIntent.FLAG_UPDATE_CURRENT);
+        notifier.setContentIntent(resultIntent);
+        NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        mgr.notify(notifierId, notifier.build());
     }
 
     // Event handlers

@@ -1,6 +1,7 @@
 package com.example.saket.musicplayer;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -29,6 +30,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.example.saket.musicplayer.utils.Song;
 import com.example.saket.musicplayer.utils.SongAdapter;
+
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -88,9 +91,11 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        unbindService(mConnection);
         stopService(mIntent);
+        unbindService(mConnection);
         mService = null;
+        NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        mgr.cancel(MusicService.notifierId);
         super.onDestroy();
     }
 
@@ -122,6 +127,7 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent);
         } else if(id == R.id.exit_app) {
             stopService(mIntent);
+            unbindService(mConnection);
             mService = null;
             finish();
         }
@@ -155,6 +161,7 @@ public class HomeActivity extends AppCompatActivity
         int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
         int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
         int path = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+        int duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
         if(musicCursor !=null && musicCursor.moveToFirst()) {
             do {
                 long thisId = musicCursor.getLong(idColumn);
