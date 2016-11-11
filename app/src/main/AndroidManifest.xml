@@ -41,7 +41,8 @@
         <activity
             android:name=".SongActivity"
             android:label="Song Screen"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:launchMode="singleTop">
 
             <intent-filter>
                 <action android:name="android.intent.action.SONG" />

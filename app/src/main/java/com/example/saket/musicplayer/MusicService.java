@@ -25,6 +25,7 @@ import java.util.ArrayList;
  */
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
+    public static final int serviceTag = 1;
     public static final int notifierId = 1;
     private MediaPlayer mPlayer;
     private ArrayList<Song> playList;
