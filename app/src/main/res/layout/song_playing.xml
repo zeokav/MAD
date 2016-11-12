@@ -72,6 +72,12 @@
         android:textSize="23sp"
         android:textColor="@color/White"
         android:id="@+id/songname"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:layout_marginTop="15dp"
         android:layout_below="@+id/albumArt"
         android:layout_centerHorizontal="true" />

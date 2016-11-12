@@ -1,5 +1,6 @@
 package com.example.saket.musicplayer;
 
+import android.support.v7.app.ActionBar;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +20,7 @@ public class SongActivity extends AppCompatActivity {
     public MusicService mService;
     private Intent mIntent;
     private ImageButton pauseBtn;
-    private TextView songText, artistText;
+    private TextView songText, artistText, titleText;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -51,7 +52,10 @@ public class SongActivity extends AppCompatActivity {
         artistText.setText(song.getSongArtist());
 
         assert getSupportActionBar() != null;
-        getSupportActionBar().setTitle(song.getSongTitle());
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.head_layout);
+        titleText = (TextView) findViewById(R.id.titleText);
+        titleText.setText(song.getSongTitle());
 
     }
 
@@ -92,6 +96,7 @@ public class SongActivity extends AppCompatActivity {
 
         songText.setText(mService.getSongName());
         artistText.setText(mService.getArtistName());
+        titleText.setText(mService.getSongName());
     }
 
     public void prev(View v) {
@@ -103,6 +108,7 @@ public class SongActivity extends AppCompatActivity {
 
         songText.setText(mService.getSongName());
         artistText.setText(mService.getArtistName());
+        titleText.setText(mService.getSongName());
     }
 
 }

@@ -70,6 +70,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void startAt(int position) {
         currPosn = position;
         startSong();
+        isPaused = false;
         isSetup = true;
     }
 
@@ -129,6 +130,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             currPosn = (currPosn + 1)%playList.size();
         }
         startAt(currPosn);
+        isPaused = false;
     }
 
     public void prevSong() {
@@ -137,6 +139,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             currPosn = playList.size() - 1;
         }
         startAt(currPosn);
+        isPaused = false;
     }
 
     public void resumeSong() {
