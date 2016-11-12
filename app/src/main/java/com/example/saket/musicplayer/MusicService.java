@@ -85,18 +85,24 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
 
         mPlayer.prepareAsync();
+        NotificationCompat.Builder notifier =  makeNotification(toPlay, true);
+        NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        mgr.notify(notifierId, notifier.build());
+    }
+
+    public NotificationCompat.Builder makeNotification(Song toPlay, boolean persistent) {
         NotificationCompat.Builder notifier = new NotificationCompat.Builder(this);
         notifier.setContentText(toPlay.getSongArtist());
         notifier.setContentTitle(toPlay.getSongTitle());
         notifier.setSmallIcon(R.drawable.notificon);
+        notifier.setOngoing(persistent);
 
         Intent onSelect = new Intent(this, SongActivity.class);
         onSelect.putExtra("song_info", toPlay);
 
         PendingIntent resultIntent = PendingIntent.getActivity(this, 0, onSelect, PendingIntent.FLAG_UPDATE_CURRENT);
         notifier.setContentIntent(resultIntent);
-        NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        mgr.notify(notifierId, notifier.build());
+        return notifier;
     }
 
     public boolean isPaused() {
@@ -105,6 +111,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public void pauseSong() {
         mPlayer.pause();
+        NotificationCompat.Builder notifier = makeNotification(playList.get(currPosn), false);
+        NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mgr.notify(notifierId, notifier.build());
         isPaused = true;
     }
 
@@ -136,6 +145,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public void resumeSong() {
         if(isSetup) {
+            NotificationCompat.Builder notifier =  makeNotification(playList.get(currPosn), true);
+            NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+            mgr.notify(notifierId, notifier.build());
             mPlayer.start();
             isPaused = false;
         }
