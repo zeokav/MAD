@@ -150,7 +150,14 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         else {
             startAt(currPosn);
         }
+    }
 
+    public String getSongName() {
+        return playList.get(currPosn).getSongTitle();
+    }
+
+    public String getArtistName() {
+        return playList.get(currPosn).getSongArtist();
     }
 
     // Event handlers

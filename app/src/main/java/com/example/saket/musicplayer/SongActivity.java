@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.saket.musicplayer.utils.Song;
 
@@ -18,6 +19,7 @@ public class SongActivity extends AppCompatActivity {
     public MusicService mService;
     private Intent mIntent;
     private ImageButton pauseBtn;
+    private TextView songText, artistText;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -43,6 +45,14 @@ public class SongActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.song_playing);
         Song song = getIntent().getParcelableExtra("song_info");
+        songText = (TextView) findViewById(R.id.songname);
+        artistText = (TextView) findViewById(R.id.artistname);
+        songText.setText(song.getSongTitle());
+        artistText.setText(song.getSongArtist());
+
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setTitle(song.getSongTitle());
+
     }
 
     @Override
@@ -76,11 +86,23 @@ public class SongActivity extends AppCompatActivity {
     public void next(View v) {
         mService.nextSong();
         pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
+
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setTitle(mService.getSongName());
+
+        songText.setText(mService.getSongName());
+        artistText.setText(mService.getArtistName());
     }
 
     public void prev(View v) {
         mService.prevSong();
         pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
+
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setTitle(mService.getSongName());
+
+        songText.setText(mService.getSongName());
+        artistText.setText(mService.getArtistName());
     }
 
 }
