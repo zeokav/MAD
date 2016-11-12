@@ -21,6 +21,7 @@ import com.example.saket.musicplayer.utils.Song;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
 
 /**
  * Created by saket on 10/20/2016.
@@ -115,11 +116,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mgr.notify(notifierId, notifier.build());
         isPaused = true;
-    }
-
-    public void stopSong() {
-        mPlayer.stop();
-        isSetup = false;
     }
 
     public void nextSong() {

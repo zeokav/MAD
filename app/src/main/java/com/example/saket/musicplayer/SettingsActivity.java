@@ -10,17 +10,41 @@ import android.widget.Switch;
 public class SettingsActivity extends AppCompatActivity {
 
     Switch shuffleSwitch;
+    SharedPreferences preferences;
+    boolean isShuffle;
+
+    private void setSavedPrefs() {
+        preferences = getSharedPreferences(MusicService.pref_tag, 0);
+        isShuffle = preferences.getBoolean("shuffle", false);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
+
+        setSavedPrefs();
+
+        final SharedPreferences.Editor editor = preferences.edit();
+
         shuffleSwitch = (Switch)findViewById(R.id.shuffle);
-        shuffleSwitch.setChecked(true);
+        shuffleSwitch.setChecked(isShuffle);
+
         shuffleSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shuffleSwitch.setChecked(false);
+                if(isShuffle) {
+                    shuffleSwitch.setChecked(false);
+                    editor.putBoolean("shuffle", false);
+                    isShuffle = false;
+                    editor.apply();
+                }
+                else {
+                    shuffleSwitch.setChecked(true);
+                    editor.putBoolean("shuffle", true);
+                    isShuffle = true;
+                    editor.apply();
+                }
             }
         });
     }
