@@ -164,7 +164,8 @@ public class HomeActivity extends AppCompatActivity
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
                 String thisPath = musicCursor.getString(path);
-                songList.add(new Song(thisId, thisTitle, thisArtist, thisPath));
+                int thisDuration = musicCursor.getInt(duration);
+                songList.add(new Song(thisId, thisTitle, thisArtist, thisPath, duration));
             } while (musicCursor.moveToNext());
         }
     }

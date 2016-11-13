@@ -11,7 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.saket.musicplayer.utils.Song;
 
@@ -21,6 +23,7 @@ public class SongActivity extends AppCompatActivity {
     private Intent mIntent;
     private ImageButton pauseBtn;
     private TextView songText, artistText, titleText;
+    private SeekBar seekBar;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -28,6 +31,7 @@ public class SongActivity extends AppCompatActivity {
             MusicService.MusicBinder mBinder = (MusicService.MusicBinder)iBinder;
             mService = mBinder.getService();
             pauseBtn = (ImageButton)findViewById(R.id.pause);
+            seekBar.setMax(mService.getDuration()/1000);
             if(mService.isPaused()) {
                 pauseBtn.setImageResource(R.drawable.ic_play_arrow_white_36dp);
             }
@@ -50,6 +54,25 @@ public class SongActivity extends AppCompatActivity {
         artistText = (TextView) findViewById(R.id.artistname);
         songText.setText(song.getSongTitle());
         artistText.setText(song.getSongArtist());
+        seekBar = (SeekBar)findViewById(R.id.seekBar);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                // Do nothing
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Do nothing
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+                mService.seek(progress*1000);
+            }
+        });
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -87,6 +110,12 @@ public class SongActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onRestart() {
+        seekBar.setMax(mService.getDuration()/1000);
+        super.onRestart();
+    }
+
     public void next(View v) {
         mService.nextSong();
         pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
@@ -97,6 +126,7 @@ public class SongActivity extends AppCompatActivity {
         songText.setText(mService.getSongName());
         artistText.setText(mService.getArtistName());
         titleText.setText(mService.getSongName());
+        seekBar.setMax(mService.getDuration());
     }
 
     public void prev(View v) {
@@ -109,6 +139,7 @@ public class SongActivity extends AppCompatActivity {
         songText.setText(mService.getSongName());
         artistText.setText(mService.getArtistName());
         titleText.setText(mService.getSongName());
+        seekBar.setMax(mService.getDuration());
     }
 
 }

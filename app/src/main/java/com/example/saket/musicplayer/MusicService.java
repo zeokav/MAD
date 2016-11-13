@@ -133,6 +133,14 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         isPaused = false;
     }
 
+    public int getDuration() {
+        return mPlayer.getDuration();
+    }
+
+    public void seek(int pos) {
+        mPlayer.seekTo(pos);
+    }
+
     public void prevSong() {
         currPosn -= 1;
         if(currPosn < 0) {
@@ -167,7 +175,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-
+        nextSong();
     }
 
     @Override
