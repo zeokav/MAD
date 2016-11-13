@@ -86,7 +86,12 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             return;
         }
 
-        mPlayer.prepareAsync();
+        try {
+            mPlayer.prepare();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         NotificationCompat.Builder notifier =  makeNotification(toPlay, true);
         NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         mgr.notify(notifierId, notifier.build());
@@ -131,6 +136,14 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
         startAt(currPosn);
         isPaused = false;
+    }
+
+    public int getCurrPosn() {
+        return mPlayer.getCurrentPosition();
+    }
+
+    public Song getSong() {
+        return playList.get(currPosn);
     }
 
     public int getDuration() {

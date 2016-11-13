@@ -1,5 +1,7 @@
 package com.example.saket.musicplayer;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,7 +15,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.saket.musicplayer.utils.Song;
 
@@ -24,6 +25,23 @@ public class SongActivity extends AppCompatActivity {
     private ImageButton pauseBtn;
     private TextView songText, artistText, titleText;
     private SeekBar seekBar;
+    Song song;
+    ActionBar header;
+
+    final Handler uiHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle data = msg.getData();
+            song = data.getParcelable("song_info");
+            songText.setText(song.getSongTitle());
+            artistText.setText(song.getSongArtist());
+            seekBar.setMax(mService.getDuration()/1000);
+
+            assert getSupportActionBar() != null;
+            getSupportActionBar().setTitle(mService.getSongName());
+            super.handleMessage(msg);
+        }
+    };
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -32,6 +50,9 @@ public class SongActivity extends AppCompatActivity {
             mService = mBinder.getService();
             pauseBtn = (ImageButton)findViewById(R.id.pause);
             seekBar.setMax(mService.getDuration()/1000);
+            CounterThread cThread = new CounterThread();
+            Thread counter = new Thread(cThread);
+            counter.start();
             if(mService.isPaused()) {
                 pauseBtn.setImageResource(R.drawable.ic_play_arrow_white_36dp);
             }
@@ -45,15 +66,37 @@ public class SongActivity extends AppCompatActivity {
         }
     };
 
+    private class CounterThread implements Runnable {
+        @Override
+        public void run() {
+            while(true) {
+                try {
+                    if(!mService.getSongName().equals(song.getSongTitle())) {
+                        Message msg = uiHandler.obtainMessage();
+                        Bundle b = new Bundle();
+                        b.putParcelable("song_info", mService.getSong());
+                        msg.setData(b);
+                        uiHandler.sendMessage(msg);
+                    }
+                    seekBar.setProgress(mService.getCurrPosn()/1000);
+                    Thread.sleep(1000);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.song_playing);
-        Song song = getIntent().getParcelableExtra("song_info");
+        song = getIntent().getParcelableExtra("song_info");
         songText = (TextView) findViewById(R.id.songname);
         artistText = (TextView) findViewById(R.id.artistname);
         songText.setText(song.getSongTitle());
         artistText.setText(song.getSongArtist());
+        header = getSupportActionBar();
         seekBar = (SeekBar)findViewById(R.id.seekBar);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -74,9 +117,9 @@ public class SongActivity extends AppCompatActivity {
             }
         });
 
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.head_layout);
+        assert header != null;
+        header.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        header.setCustomView(R.layout.head_layout);
         titleText = (TextView) findViewById(R.id.titleText);
         titleText.setText(song.getSongTitle());
 
@@ -120,13 +163,13 @@ public class SongActivity extends AppCompatActivity {
         mService.nextSong();
         pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
 
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setTitle(mService.getSongName());
+        assert header != null;
+        header.setTitle(mService.getSongName());
 
         songText.setText(mService.getSongName());
         artistText.setText(mService.getArtistName());
         titleText.setText(mService.getSongName());
-        seekBar.setMax(mService.getDuration());
+        seekBar.setMax(mService.getDuration()/1000);
     }
 
     public void prev(View v) {
@@ -139,7 +182,7 @@ public class SongActivity extends AppCompatActivity {
         songText.setText(mService.getSongName());
         artistText.setText(mService.getArtistName());
         titleText.setText(mService.getSongName());
-        seekBar.setMax(mService.getDuration());
+        seekBar.setMax(mService.getDuration()/1000);
     }
 
 }

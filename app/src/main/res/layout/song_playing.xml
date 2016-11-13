@@ -51,7 +51,7 @@
         android:id="@+id/seekBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:progressDrawable="@drawable/progressbar"
-        android:thumbTint="@android:color/transparent"
+        android:thumbTint="#F00"
         android:progress="0"
         android:indeterminate="false"
         android:layout_alignTop="@+id/button"
