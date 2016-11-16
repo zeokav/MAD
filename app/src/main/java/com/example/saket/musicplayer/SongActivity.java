@@ -32,13 +32,7 @@ public class SongActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             Bundle data = msg.getData();
-            song = data.getParcelable("song_info");
-            songText.setText(song.getSongTitle());
-            artistText.setText(song.getSongArtist());
-            seekBar.setMax(mService.getDuration()/1000);
-
-            assert getSupportActionBar() != null;
-            getSupportActionBar().setTitle(mService.getSongName());
+            onSongFinish();
             super.handleMessage(msg);
         }
     };
@@ -157,6 +151,22 @@ public class SongActivity extends AppCompatActivity {
     protected void onRestart() {
         seekBar.setMax(mService.getDuration()/1000);
         super.onRestart();
+    }
+
+    public void onSongFinish() {
+        pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assert header != null;
+        header.setTitle(mService.getSongName());
+
+        songText.setText(mService.getSongName());
+        artistText.setText(mService.getArtistName());
+        titleText.setText(mService.getSongName());
+        seekBar.setMax(mService.getDuration()/1000);
     }
 
     public void next(View v) {
