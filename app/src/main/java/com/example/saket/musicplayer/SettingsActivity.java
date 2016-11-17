@@ -10,12 +10,17 @@ import android.widget.Switch;
 public class SettingsActivity extends AppCompatActivity {
 
     Switch shuffleSwitch;
+    Switch hapticSwitch;
+
     SharedPreferences preferences;
+
     boolean isShuffle;
+    boolean isHaptic;
 
     private void setSavedPrefs() {
         preferences = getSharedPreferences(MusicService.pref_tag, 0);
         isShuffle = preferences.getBoolean("shuffle", false);
+        isHaptic = preferences.getBoolean("haptic", false);
     }
 
     @Override
@@ -30,6 +35,9 @@ public class SettingsActivity extends AppCompatActivity {
         shuffleSwitch = (Switch)findViewById(R.id.shuffle);
         shuffleSwitch.setChecked(isShuffle);
 
+        hapticSwitch = (Switch)findViewById(R.id.haptic);
+        hapticSwitch.setChecked(isHaptic);
+
         shuffleSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -42,6 +50,24 @@ public class SettingsActivity extends AppCompatActivity {
                 else {
                     shuffleSwitch.setChecked(true);
                     editor.putBoolean("shuffle", true);
+                    isShuffle = true;
+                    editor.apply();
+                }
+            }
+        });
+
+        hapticSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isShuffle) {
+                    hapticSwitch.setChecked(false);
+                    editor.putBoolean("haptic", false);
+                    isShuffle = false;
+                    editor.apply();
+                }
+                else {
+                    hapticSwitch.setChecked(true);
+                    editor.putBoolean("haptic", true);
                     isShuffle = true;
                     editor.apply();
                 }

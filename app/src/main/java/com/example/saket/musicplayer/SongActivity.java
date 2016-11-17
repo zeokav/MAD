@@ -1,7 +1,9 @@
 package com.example.saket.musicplayer;
 
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.support.v7.app.ActionBar;
 import android.content.ComponentName;
 import android.content.Context;
@@ -29,6 +31,9 @@ public class SongActivity extends AppCompatActivity {
     Song song;
     ActionBar header;
     boolean isAlive;
+    Vibrator vibrator;
+    boolean isHaptic;
+    private SharedPreferences options;
 
     final Handler uiHandler = new Handler() {
         @Override
@@ -94,6 +99,11 @@ public class SongActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.song_playing);
+
+        options = getSharedPreferences("PLAYERPREFS", 0);
+        vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+        isHaptic = options.getBoolean("haptic", false);
+
         song = getIntent().getParcelableExtra("song_info");
         songText = (TextView) findViewById(R.id.songname);
         artistText = (TextView) findViewById(R.id.artistname);
@@ -101,6 +111,7 @@ public class SongActivity extends AppCompatActivity {
         artistText.setText(song.getSongArtist());
         header = getSupportActionBar();
         seekBar = (SeekBar)findViewById(R.id.seekBar);
+
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -146,6 +157,9 @@ public class SongActivity extends AppCompatActivity {
     }
 
     public void pause(View v) {
+        if(isHaptic) {
+            vibrator.vibrate(100);
+        }
         pauseBtn = (ImageButton)findViewById(R.id.pause);
         if(mService.isPaused()) {
             pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
@@ -180,6 +194,9 @@ public class SongActivity extends AppCompatActivity {
     }
 
     public void next(View v) {
+        if(isHaptic) {
+            vibrator.vibrate(100);
+        }
         mService.nextSong();
         pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
 
@@ -193,6 +210,9 @@ public class SongActivity extends AppCompatActivity {
     }
 
     public void prev(View v) {
+        if(isHaptic) {
+            vibrator.vibrate(100);
+        }
         mService.prevSong();
         pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
 
