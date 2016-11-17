@@ -1,6 +1,8 @@
 package com.example.saket.musicplayer;
 
+import android.app.SearchManager;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
@@ -17,7 +19,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.saket.musicplayer.utils.Song;
 
@@ -225,9 +226,10 @@ public class SongActivity extends AppCompatActivity {
         assert header != null;
         header.setTitle(mService.getSongName());
 
-        songText.setText(mService.getSongName());
-        artistText.setText(mService.getArtistName());
-        titleText.setText(mService.getSongName());
+        song = mService.getSong();
+        songText.setText(song.getSongTitle());
+        artistText.setText(song.getSongArtist());
+        titleText.setText(song.getSongTitle());
         seekBar.setMax(mService.getDuration()/1000);
     }
 
@@ -244,10 +246,23 @@ public class SongActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setTitle(mService.getSongName());
 
-        songText.setText(mService.getSongName());
-        artistText.setText(mService.getArtistName());
-        titleText.setText(mService.getSongName());
+        song = mService.getSong();
+        songText.setText(song.getSongTitle());
+        artistText.setText(song.getSongArtist());
+        titleText.setText(song.getSongTitle());
         seekBar.setMax(mService.getDuration()/1000);
     }
 
+    public void search(View v) {
+        try{
+            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+            intent.putExtra(SearchManager.QUERY, song.getSongTitle());
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
 }

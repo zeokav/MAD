@@ -93,5 +93,16 @@
         android:layout_below="@+id/songname"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleX="0.6"
+        android:scaleY="0.6"
+        android:onClick="search"
+        android:id="@+id/search"
+        android:background="@drawable/google"
+        android:layout_alignBottom="@+id/albumArt"
+        android:layout_alignParentEnd="true" />
+
 
 </RelativeLayout>
