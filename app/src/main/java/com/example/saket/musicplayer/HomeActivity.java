@@ -37,8 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends AppCompatActivity {
 
     private ArrayList<Song> songList;
     private ListView songView;
@@ -55,21 +54,11 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
         songView = (ListView) findViewById(R.id.song_list);
         songList = new ArrayList<>();
 
         if(!isStoragePermissionGranted()) {
-            Toast.makeText(getApplicationContext(), "Permissions were not there.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Looking for permissions!", Toast.LENGTH_LONG).show();
         }
         else {
             getSongList();
@@ -88,24 +77,18 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+
+    // Clear service binding on destruction
     @Override
     protected void onDestroy() {
         stopService(mIntent);
         unbindService(mConnection);
         mService = null;
+
+        // Remove persistence from notification
         NotificationManager mgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         mgr.cancel(MusicService.notifierId);
         super.onDestroy();
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            moveTaskToBack(true);
-        }
     }
 
     @Override
@@ -121,7 +104,6 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            Log.d("Menu", "Clicked");
             Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
             startActivity(intent);
         } else if(id == R.id.exit_app) {
@@ -131,28 +113,12 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-
     public void getSongList() {
         ContentResolver musicResolver = getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri,null,null,null,null);
-        //get columns
+
+        // Get column IDs.
         int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
         int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
         int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
@@ -228,7 +194,7 @@ public class HomeActivity extends AppCompatActivity
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-
+            Log.d(TAG, "onServiceDisconnected: Disconnected.");
         }
     };
 }

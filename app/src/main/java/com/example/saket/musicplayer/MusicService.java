@@ -63,10 +63,16 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         return true;
     }
 
+    // Get song list and set it in this service.
     public void setPlaylist(ArrayList<Song> playList) {
         this.playList = playList;
     }
 
+
+    /**
+     * Start playing the song at index - position
+     * @param position
+     */
     public void startAt(int position) {
         currPosn = position;
         startSong();
@@ -74,6 +80,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         isSetup = true;
     }
 
+    /**
+     * Set up the music player by loading the song source and then play in onPreparedListener
+     */
     public void startSong() {
         mPlayer.reset();
         Song toPlay = playList.get(currPosn);
@@ -97,6 +106,12 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mgr.notify(notifierId, notifier.build());
     }
 
+    /**
+     * Make the notification object
+     * @param toPlay The song that's being played. Used to set notification data
+     * @param persistent if the notification is to be persistent
+     * @return Notification builder object
+     */
     public NotificationCompat.Builder makeNotification(Song toPlay, boolean persistent) {
         NotificationCompat.Builder notifier = new NotificationCompat.Builder(this);
         notifier.setContentText(toPlay.getSongArtist());
@@ -124,36 +139,57 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         isPaused = true;
     }
 
+    /**
+     * Play next song depending on the shuffle and loop preferences
+     */
     public void nextSong() {
         SharedPreferences pref = getSharedPreferences(pref_tag, 0);
         boolean is_shuffle = pref.getBoolean("shuffle", false);
-        if(is_shuffle) {
+        boolean is_repeat = pref.getBoolean("repeat", false);
+        if(is_shuffle && !is_repeat) {
             Random r = new Random();
             currPosn = r.nextInt(playList.size());
         }
-        else {
+        else if(!is_repeat) {
             currPosn = (currPosn + 1)%playList.size();
         }
+
         startAt(currPosn);
         isPaused = false;
     }
 
+    /**
+     * @return Position of the song
+     */
     public int getCurrPosn() {
         return mPlayer.getCurrentPosition();
     }
 
+    /**
+     * @return Song at the current position
+     */
     public Song getSong() {
         return playList.get(currPosn);
     }
 
+    /**
+     * @return Duration of the song
+     */
     public int getDuration() {
         return mPlayer.getDuration();
     }
 
+    /**
+     * @param pos Seek to this position
+     */
     public void seek(int pos) {
         mPlayer.seekTo(pos);
     }
 
+
+    /**
+     * Play previous song
+     */
     public void prevSong() {
         currPosn -= 1;
         if(currPosn < 0) {
@@ -163,6 +199,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         isPaused = false;
     }
 
+    /**
+     * Resume song if paused
+     */
     public void resumeSong() {
         if(isSetup) {
             NotificationCompat.Builder notifier =  makeNotification(playList.get(currPosn), true);
@@ -196,13 +235,13 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         return false;
     }
 
+    // Start when data source ready
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();
     }
 
     // Binder Class
-
     public class MusicBinder extends Binder {
         MusicService getService() {
             return MusicService.this;

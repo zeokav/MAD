@@ -35,6 +35,9 @@ public class SongActivity extends AppCompatActivity {
     boolean isHaptic;
     private SharedPreferences options;
 
+    /**
+     * Handler to update the UI elements depending on the worker thread.
+     */
     final Handler uiHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -44,13 +47,16 @@ public class SongActivity extends AppCompatActivity {
     };
 
     private ServiceConnection mConnection = new ServiceConnection() {
+
+        /**
+         * When service connected, set seek bar and start the thread.
+         */
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MusicService.MusicBinder mBinder = (MusicService.MusicBinder)iBinder;
             mService = mBinder.getService();
             pauseBtn = (ImageButton)findViewById(R.id.pause);
             seekBar.setMax(mService.getDuration()/1000);
-            Toast.makeText(getApplicationContext(), "Count: " + Thread.activeCount(), Toast.LENGTH_SHORT).show();
             isAlive = true;
             CounterThread cThread = new CounterThread();
             Thread counter = new Thread(cThread);
@@ -68,6 +74,10 @@ public class SongActivity extends AppCompatActivity {
         }
     };
 
+
+    /**
+     * Worker thread to maintain timer and to swithce to next song on finish
+     */
     private class CounterThread implements Runnable {
         @Override
         public void run() {
@@ -124,6 +134,9 @@ public class SongActivity extends AppCompatActivity {
                 // Do nothing
             }
 
+            /**
+             * Seek to last position
+             */
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 int progress = seekBar.getProgress();
@@ -156,6 +169,9 @@ public class SongActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    /**
+     * Pause music, or play if paused. Change the drawable depending on the state.
+     */
     public void pause(View v) {
         if(isHaptic) {
             vibrator.vibrate(100);
@@ -177,6 +193,9 @@ public class SongActivity extends AppCompatActivity {
         super.onRestart();
     }
 
+    /**
+     * Change the UI elements after song changed.
+     */
     public void onSongFinish() {
         pauseBtn.setImageResource(R.drawable.ic_pause_white_36dp);
         try {
@@ -193,6 +212,9 @@ public class SongActivity extends AppCompatActivity {
         seekBar.setMax(mService.getDuration()/1000);
     }
 
+    /**
+     * Go to the next song
+     */
     public void next(View v) {
         if(isHaptic) {
             vibrator.vibrate(100);
@@ -209,6 +231,9 @@ public class SongActivity extends AppCompatActivity {
         seekBar.setMax(mService.getDuration()/1000);
     }
 
+    /**
+     * Go to the previous song
+     */
     public void prev(View v) {
         if(isHaptic) {
             vibrator.vibrate(100);
