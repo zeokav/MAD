@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.saket.musicplayer.utils.Song;
 
@@ -27,11 +28,11 @@ public class SongActivity extends AppCompatActivity {
     private SeekBar seekBar;
     Song song;
     ActionBar header;
+    boolean isAlive;
 
     final Handler uiHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Bundle data = msg.getData();
             onSongFinish();
             super.handleMessage(msg);
         }
@@ -44,6 +45,8 @@ public class SongActivity extends AppCompatActivity {
             mService = mBinder.getService();
             pauseBtn = (ImageButton)findViewById(R.id.pause);
             seekBar.setMax(mService.getDuration()/1000);
+            Toast.makeText(getApplicationContext(), "Count: " + Thread.activeCount(), Toast.LENGTH_SHORT).show();
+            isAlive = true;
             CounterThread cThread = new CounterThread();
             Thread counter = new Thread(cThread);
             counter.start();
@@ -63,7 +66,7 @@ public class SongActivity extends AppCompatActivity {
     private class CounterThread implements Runnable {
         @Override
         public void run() {
-            while(true) {
+            while(isAlive) {
                 try {
                     if(!mService.getSongName().equals(song.getSongTitle())) {
                         Message msg = uiHandler.obtainMessage();
@@ -79,6 +82,12 @@ public class SongActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onStop() {
+        isAlive = false;
+        super.onStop();
     }
 
     @Override
@@ -132,6 +141,7 @@ public class SongActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         unbindService(mConnection);
+        isAlive = false;
         super.onDestroy();
     }
 
