@@ -2,7 +2,6 @@ package com.example.saket.musicplayer;
 
 import android.app.SearchManager;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;

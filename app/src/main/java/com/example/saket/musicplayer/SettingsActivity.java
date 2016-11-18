@@ -16,18 +16,21 @@ public class SettingsActivity extends AppCompatActivity {
     Switch shuffleSwitch;
     Switch hapticSwitch;
     Switch loopSwitch;
+    Switch splashSwitch;
 
     SharedPreferences preferences;
 
     boolean isShuffle;
     boolean isHaptic;
     boolean isRepeat;
+    boolean isSplash;
 
     private void setSavedPrefs() {
         preferences = getSharedPreferences(MusicService.pref_tag, 0);
         isShuffle = preferences.getBoolean("shuffle", false);
         isHaptic = preferences.getBoolean("haptic", false);
         isRepeat = preferences.getBoolean("repeat", false);
+        isSplash = preferences.getBoolean("splash", false);
     }
 
     @Override
@@ -48,6 +51,8 @@ public class SettingsActivity extends AppCompatActivity {
         loopSwitch = (Switch) findViewById(R.id.repeat);
         loopSwitch.setChecked(isRepeat);
 
+        splashSwitch = (Switch) findViewById(R.id.splash);
+        splashSwitch.setChecked(isSplash);
 
         /**
          * Listeners for the toggles. On changing, save in shared preferences.
@@ -101,6 +106,24 @@ public class SettingsActivity extends AppCompatActivity {
                     loopSwitch.setChecked(true);
                     editor.putBoolean("repeat", true);
                     isRepeat = true;
+                    editor.apply();
+                }
+            }
+        });
+
+        splashSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isSplash) {
+                    splashSwitch.setChecked(false);
+                    editor.putBoolean("splash", false);
+                    isSplash = false;
+                    editor.apply();
+                }
+                else {
+                    splashSwitch.setChecked(true);
+                    editor.putBoolean("splash", true);
+                    isSplash = true;
                     editor.apply();
                 }
             }

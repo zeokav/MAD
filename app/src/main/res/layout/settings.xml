@@ -44,6 +44,19 @@
         android:layout_alignParentStart="true"
         android:padding="10dp"/>
 
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disable splash screen?"
+        android:paddingTop="20dp"
+        android:id="@+id/splash"
+        android:checked="false"
+        android:layout_below="@+id/repeat"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:padding="10dp"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
